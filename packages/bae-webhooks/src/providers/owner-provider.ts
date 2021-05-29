@@ -1,5 +1,7 @@
 import { IsDefined, IsString, IsUUID } from "class-validator";
-import { BaseProvider } from "./base-provider";
+import { v4 as uuidv4 } from "uuid";
+import { BaseProvider, ProviderContext } from "./base-provider";
+import { validateData } from "../utils/validator";
 
 export class OwnerSchema {
   @IsUUID()
@@ -12,15 +14,23 @@ export class OwnerSchema {
 }
 
 export class OwnerProvider extends BaseProvider {
-  public async create(input: OwnerSchema): Promise<OwnerSchema> {
-    this.validate(new OwnerSchema());
-    const owner = await this.read({ id: input.id });
+  constructor(ctx: ProviderContext) {
+    super(ctx);
+    this.create = this.create.bind(this);
+    this.read = this.read.bind(this);
+    this.update = this.update.bind(this);
+    this.delete = this.delete.bind(this);
+  }
 
-    if (owner) {
-      return owner;
-    }
-
-    return this.ctx.clients.owners.create(input);
+  public async create(): Promise<Omit<OwnerSchema, "id">> {
+    const owner = {
+      id: uuidv4(),
+      accessToken: uuidv4(),
+    };
+    await this.ctx.clients.owners.create(owner);
+    return {
+      accessToken: owner.accessToken,
+    };
   }
 
   public async read(input: { id: string }): Promise<OwnerSchema> {
@@ -28,14 +38,18 @@ export class OwnerProvider extends BaseProvider {
   }
 
   public async update(input: OwnerSchema): Promise<OwnerSchema> {
-    this.validate(new OwnerSchema());
+    validateData(input, new OwnerSchema());
     const owner = await this.read({ id: input.id });
 
     if (!owner) {
       throw new Error("Owner not found");
     }
 
-    return this.ctx.clients.owners.update(input);
+    await this.ctx.clients.owners.update(input);
+    return {
+      ...input,
+      id: undefined,
+    };
   }
 
   public async delete(input: { id: string }): Promise<void> {

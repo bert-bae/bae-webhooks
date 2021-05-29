@@ -18,7 +18,10 @@ export class DynamoDBClient extends BaseClient {
 
   constructor(tableName, primaryKey, rangeKey?) {
     super();
-    this.client = new DynamoDB.DocumentClient();
+    this.client = new DynamoDB.DocumentClient({
+      region: process.env.DYNAMODB_REGION,
+      endpoint: process.env.DYNAMODB_ENDPOINT,
+    });
     this.tableName = tableName;
     this.primaryKey = primaryKey;
     this.rangeKey = rangeKey || undefined;

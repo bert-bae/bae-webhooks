@@ -1,4 +1,3 @@
-import { validate } from "class-validator";
 import { BaseClient, BaseClientInput } from "../clients";
 
 export type ProviderContext = {
@@ -10,7 +9,6 @@ export type ProviderContext = {
   clients: {
     owners: BaseClient;
     webhooks: BaseClient;
-    topics: BaseClient;
   };
 };
 
@@ -19,13 +17,6 @@ export abstract class BaseProvider {
 
   constructor(ctx: ProviderContext) {
     this.ctx = ctx;
-  }
-
-  protected async validate(commandClass) {
-    const validations = await validate(commandClass);
-    if (validations.length !== 0) {
-      throw new Error("Validation errors");
-    }
   }
 
   public async create(input: BaseClientInput): Promise<any> {}
