@@ -1,4 +1,4 @@
-export type BaseClientInput = { id: string } & Record<string, any>;
+export type BaseClientInput = Record<string, any>;
 
 export abstract class BaseClient {
   public async create(input: BaseClientInput): Promise<any> {}

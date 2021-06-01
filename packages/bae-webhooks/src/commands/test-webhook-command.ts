@@ -16,7 +16,7 @@ class TestWebhookCommandInput {
 
 export class TestWebhookCommand extends BaseCommand {
   public async execute(input: TestWebhookCommandInput) {
-    this.validate(new TestWebhookCommandInput());
+    // this.validate(new TestWebhookCommandInput());
     // Test hook by sending a test payload
   }
 }

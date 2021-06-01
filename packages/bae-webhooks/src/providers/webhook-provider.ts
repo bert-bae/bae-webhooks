@@ -1,14 +1,10 @@
-import { IsArray, IsDefined, IsString, IsUUID } from "class-validator";
-import { v4 as uuidv4 } from "uuid";
+import { IsArray, IsDefined, IsString, IsUrl } from "class-validator";
 import { BaseProvider, ProviderContext } from "./base-provider";
 import { validateData } from "../utils/validator";
+import { NotFoundError } from "../errors";
 
 export class WebhookSchema {
-  @IsUUID()
-  @IsDefined()
-  id: string;
-
-  @IsUUID()
+  @IsUrl()
   @IsDefined()
   url: string;
 
@@ -30,34 +26,41 @@ export class WebhookProvider extends BaseProvider {
   }
 
   public async create(input: WebhookSchema): Promise<WebhookSchema> {
-    validateData({ ...input, id: uuidv4() }, new WebhookSchema());
-    const webhook = await this.read({ id: input.id });
-
-    if (webhook) {
-      return webhook;
-    }
-
-    return this.ctx.clients.webhooks.create(input);
+    await validateData(input, new WebhookSchema());
+    await this.ctx.clients.webhooks.create(input);
+    return input;
   }
 
-  public async read(input: { id: string }): Promise<WebhookSchema> {
-    return this.ctx.clients.webhooks.read({ id: input.id });
+  public async read(input: Partial<WebhookSchema>): Promise<WebhookSchema[]> {
+    const params: Partial<WebhookSchema> & { rangeExpression?: string } = {
+      ownerId: input.ownerId,
+    };
+
+    if (input.url) {
+      params.url = input.url;
+      params.rangeExpression = `url = :rkey`;
+    }
+
+    return this.ctx.clients.webhooks.read(params);
   }
 
   public async update(input: WebhookSchema): Promise<WebhookSchema> {
-    validateData(input, new WebhookSchema());
-    const webhook = await this.read({ id: input.id });
+    await validateData(input, new WebhookSchema());
 
-    if (webhook.ownerId !== input.ownerId) {
-      throw new Error(
-        "Only the owner of the webhook can modify webhook configurations"
+    const webhooks = await this.read(input);
+    if (!webhooks[0]) {
+      throw new NotFoundError(
+        "Webhook does not exist",
+        `${input.ownerId}::${input.url}`
       );
     }
 
     return this.ctx.clients.webhooks.update(input);
   }
 
-  public async delete(input: { id: string }): Promise<void> {
-    return this.ctx.clients.webhooks.delete({ id: input.id });
+  public async delete(
+    input: Pick<WebhookSchema, "ownerId" | "url">
+  ): Promise<void> {
+    return this.ctx.clients.webhooks.delete(input);
   }
 }

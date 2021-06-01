@@ -2,13 +2,11 @@ import { DynamoDB } from "aws-sdk";
 import { BaseClient, BaseClientInput } from "./base-client";
 
 type DynamoDBQueryInput = DynamoDB.DocumentClient.QueryInput;
-type DynamoDBQueryOutput = DynamoDB.DocumentClient.QueryOutput;
+type DynamoDBQueryOutput = DynamoDB.DocumentClient.QueryOutput["Items"];
 type DynamoDBPutInput = DynamoDB.DocumentClient.PutItemInput;
 type DynamoDBPutOutput = DynamoDB.DocumentClient.PutItemOutput;
 type DynamoDBDeleteInput = DynamoDB.DocumentClient.DeleteItemInput;
 type DynamoDBDeleteOutput = DynamoDB.DocumentClient.DeleteItemOutput;
-
-type DynamoDBKeys = BaseClientInput & { rangeKey?: string | number };
 
 export class DynamoDBClient extends BaseClient {
   protected client: DynamoDB.DocumentClient;
@@ -28,7 +26,7 @@ export class DynamoDBClient extends BaseClient {
   }
 
   public async create(
-    input: DynamoDBKeys & Record<string, any>
+    input: BaseClientInput & Record<string, any>
   ): Promise<DynamoDBPutOutput> {
     const { id, rangeKey, ...data } = input;
     const params: DynamoDBPutInput = {
@@ -47,40 +45,49 @@ export class DynamoDBClient extends BaseClient {
   }
 
   public async read(
-    input: DynamoDBKeys & { rangeExpression?: string }
+    input: BaseClientInput & { rangeExpression?: string }
   ): Promise<DynamoDBQueryOutput> {
     const params: DynamoDBQueryInput = {
       TableName: this.tableName,
-      KeyConditionExpression: `${this.primaryKey} = :pkey`,
+      KeyConditionExpression: `#${this.primaryKey} = :pkey`,
+      ExpressionAttributeNames: {
+        [`#${this.primaryKey}`]: this.primaryKey,
+      },
       ExpressionAttributeValues: {
-        ":pkey": input.id,
+        ":pkey": input[this.primaryKey],
       },
     };
 
-    if (this.rangeKey && input.rangeKey && input.rangeExpression) {
-      params.ExpressionAttributeValues[":rkey"] = input.rangeKey;
-      params.KeyConditionExpression += ` ${input.rangeExpression}`;
+    if (
+      this.rangeKey &&
+      input.hasOwnProperty(this.rangeKey) &&
+      input.rangeExpression
+    ) {
+      params.ExpressionAttributeNames[`#${this.rangeKey}`] = this.rangeKey;
+      params.ExpressionAttributeValues[":rkey"] = input[this.rangeKey];
+      params.KeyConditionExpression += ` and #${input.rangeExpression}`;
     }
 
-    return this.client.query(params).promise();
+    const result = await this.client.query(params).promise();
+    return result.Items;
   }
 
   public async update(
-    input: DynamoDBKeys & Record<string, any>
+    input: BaseClientInput & Record<string, any>
   ): Promise<DynamoDBPutOutput> {
     return this.create(input);
   }
 
-  public async delete(input: DynamoDBKeys): Promise<DynamoDBDeleteOutput> {
+  public async delete(input: BaseClientInput): Promise<DynamoDBDeleteOutput> {
     const params: DynamoDBDeleteInput = {
       TableName: this.tableName,
       Key: {
-        [this.primaryKey]: input.id,
+        [this.primaryKey]: input[this.primaryKey],
       },
     };
 
-    if (this.rangeKey && input.rangeKey) {
-      params.Key[this.rangeKey] = input.rangeKey;
+    if (this.rangeKey && input.hasOwnProperty(this.rangeKey)) {
+      params.Key[this.rangeKey] = input[this.rangeKey];
     }
 
     return this.client.delete(params).promise();

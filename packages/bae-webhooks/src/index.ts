@@ -1,36 +1,60 @@
 import express from "express";
 import bodyParser from "body-parser";
-import { createContext } from "./contextualizer";
-import { OwnerProvider, WebhookProvider, BaseProvider } from "./providers";
-
-const context = createContext();
-const webhookProvider = new WebhookProvider(context);
-const ownerProvider = new OwnerProvider(context);
+import { createCommandContext } from "./contextualizer";
+import {
+  BaseCommand,
+  CreateOwnerCommand,
+  DeleteOwnerCommand,
+  GetOwnerCommand,
+  RegenerateTokensCommand,
+  CreateWebhookCommand,
+  GetWebhooksCommand,
+  UpdateWebhook,
+  DeleteWebhookCommand,
+} from "./commands";
 
 const app = express();
 const port = process.env.PORT;
 
-const processRequest =
-  (providerMethod: BaseProvider["create" | "read" | "update" | "delete"]) =>
-  async (req, res, next) => {
-    const { body, params, headers } = req;
-    try {
-      const providerResult = await providerMethod({
-        ...(params || {}),
-        ...(body || {}),
-      });
-      res.status(200).json({ success: true, data: providerResult || {} });
-    } catch (error) {
-      res.status(500).json({ success: false, error });
-    }
-  };
+const context = createCommandContext();
+const processCommand = (command: BaseCommand) => async (req, res, next) => {
+  const { body, params, query, headers } = req;
+  try {
+    const providerResult = await command.execute({
+      ...(query || {}),
+      ...(params || {}),
+      ...(body || {}),
+    });
+    res.status(200).json({ success: true, data: providerResult || {} });
+  } catch (error) {
+    context.logger.error("Server error", error);
+    res.status(500).json({ success: false, error });
+  }
+};
 
 app.use(bodyParser.json());
 
-app.get("/owners/:id", processRequest(ownerProvider.read));
-app.put("/owners/:id", processRequest(ownerProvider.update));
-app.delete("/owners/:id", processRequest(ownerProvider.delete));
-app.post("/owners", processRequest(ownerProvider.create));
+app.get(
+  "/owners/:ownerId/webhooks",
+  processCommand(new GetWebhooksCommand(context))
+);
+app.put(
+  "/owners/:ownerId/webhooks",
+  processCommand(new UpdateWebhook(context))
+);
+app.delete(
+  "/owners/:ownerId/webhooks",
+  processCommand(new DeleteWebhookCommand(context))
+);
+app.post(
+  "/owners/:ownerId/webhooks",
+  processCommand(new CreateWebhookCommand(context))
+);
+
+app.get("/owners/:id", processCommand(new GetOwnerCommand(context)));
+app.put("/owners/:id", processCommand(new RegenerateTokensCommand(context)));
+app.delete("/owners/:id", processCommand(new DeleteOwnerCommand(context)));
+app.post("/owners", processCommand(new CreateOwnerCommand(context)));
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

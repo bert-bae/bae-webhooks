@@ -1,5 +1,4 @@
 import { IsDefined, IsString, IsUUID } from "class-validator";
-import { v4 as uuidv4 } from "uuid";
 import { BaseProvider, ProviderContext } from "./base-provider";
 import { validateData } from "../utils/validator";
 
@@ -11,6 +10,10 @@ export class OwnerSchema {
   @IsString()
   @IsDefined()
   accessToken: string;
+
+  @IsString()
+  @IsDefined()
+  secretToken: string;
 }
 
 export class OwnerProvider extends BaseProvider {
@@ -22,23 +25,18 @@ export class OwnerProvider extends BaseProvider {
     this.delete = this.delete.bind(this);
   }
 
-  public async create(): Promise<Omit<OwnerSchema, "id">> {
-    const owner = {
-      id: uuidv4(),
-      accessToken: uuidv4(),
-    };
-    await this.ctx.clients.owners.create(owner);
-    return {
-      accessToken: owner.accessToken,
-    };
+  public async create(input: OwnerSchema): Promise<OwnerSchema> {
+    await validateData(input, new OwnerSchema());
+    await this.ctx.clients.owners.create(input);
+    return input;
   }
 
   public async read(input: { id: string }): Promise<OwnerSchema> {
-    return this.ctx.clients.owners.read({ id: input.id });
+    const owners = await this.ctx.clients.owners.read({ id: input.id });
+    return owners[0];
   }
 
   public async update(input: OwnerSchema): Promise<OwnerSchema> {
-    validateData(input, new OwnerSchema());
     const owner = await this.read({ id: input.id });
 
     if (!owner) {

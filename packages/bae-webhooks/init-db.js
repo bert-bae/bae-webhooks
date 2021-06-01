@@ -35,21 +35,21 @@ const tables = [
     },
     AttributeDefinitions: [
       {
-        AttributeName: "id",
+        AttributeName: "ownerId",
         AttributeType: "S",
       },
       {
-        AttributeName: "ownerId",
+        AttributeName: "url",
         AttributeType: "S",
       },
     ],
     KeySchema: [
       {
-        AttributeName: "id",
+        AttributeName: "ownerId",
         KeyType: "HASH",
       },
       {
-        AttributeName: "ownerId",
+        AttributeName: "url",
         KeyType: "RANGE",
       },
     ],
