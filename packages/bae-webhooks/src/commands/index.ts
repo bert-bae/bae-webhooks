@@ -10,3 +10,5 @@ export { UpdateWebhook } from "./update-webhook-command";
 export { CreateWebhookCommand } from "./create-webhook-command";
 export { GetWebhooksCommand } from "./get-webhooks-command";
 export { DeleteWebhookCommand } from "./delete-webhook-command";
+
+export { ProcessWebhookCommand } from "./process-webhook-command";

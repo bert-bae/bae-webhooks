@@ -11,6 +11,7 @@ import {
   GetWebhooksCommand,
   UpdateWebhook,
   DeleteWebhookCommand,
+  ProcessWebhookCommand,
 } from "./commands";
 
 const app = express();
@@ -55,6 +56,8 @@ app.get("/owners/:id", processCommand(new GetOwnerCommand(context)));
 app.put("/owners/:id", processCommand(new RegenerateTokensCommand(context)));
 app.delete("/owners/:id", processCommand(new DeleteOwnerCommand(context)));
 app.post("/owners", processCommand(new CreateOwnerCommand(context)));
+
+app.post("/process", processCommand(new ProcessWebhookCommand(context)));
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
