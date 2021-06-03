@@ -1,5 +1,5 @@
 {
-  "name": "bae-webhooks",
+  "name": "webhook-server",
   "version": "1.0.0",
   "description": "Library for managing webhooks",
   "main": "index.js",
