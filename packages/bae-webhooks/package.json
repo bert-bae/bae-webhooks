@@ -27,7 +27,6 @@
   "dependencies": {
     "aws-sdk": "^2.916.0",
     "axios": "^0.21.1",
-    "body-parser": "^1.19.0",
     "class-validator": "^0.13.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",

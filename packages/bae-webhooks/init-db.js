@@ -39,7 +39,7 @@ const tables = [
         AttributeType: "S",
       },
       {
-        AttributeName: "url",
+        AttributeName: "webhookId",
         AttributeType: "S",
       },
     ],
@@ -49,7 +49,7 @@ const tables = [
         KeyType: "HASH",
       },
       {
-        AttributeName: "url",
+        AttributeName: "webhookId",
         KeyType: "RANGE",
       },
     ],

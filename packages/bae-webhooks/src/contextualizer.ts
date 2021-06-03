@@ -5,7 +5,7 @@ import { CommandContext } from "./commands";
 
 const createProviderContext = (): ProviderContext => {
   const ownerClient = new DynamoDBClient("Owners", "id");
-  const webhookClient = new DynamoDBClient("Webhooks", "ownerId", "url");
+  const webhookClient = new DynamoDBClient("Webhooks", "ownerId", "webhookId");
 
   return {
     logger: log,

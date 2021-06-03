@@ -8,9 +8,9 @@ class DeleteWebhookCommandInput {
   @IsDefined()
   ownerId: string;
 
-  @IsString()
+  @IsUUID()
   @IsDefined()
-  url: string;
+  webhookId: string;
 }
 
 export class DeleteWebhookCommand extends BaseCommand {
@@ -24,12 +24,12 @@ export class DeleteWebhookCommand extends BaseCommand {
     await validateData(input, new DeleteWebhookCommandInput());
     const webhook = await this.ctx.providers.webhooks.read({
       ownerId: input.ownerId,
-      url: input.url,
+      webhookId: input.webhookId,
     });
     if (!webhook[0]) {
       throw new NotFoundError(
         "Webhook not found",
-        `${input.ownerId}::${input.url}`
+        `${input.ownerId}::${input.webhookId}`
       );
     }
 

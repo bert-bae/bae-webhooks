@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from "body-parser";
 import { createCommandContext } from "./contextualizer";
 import {
   BaseCommand,
@@ -33,7 +32,7 @@ const processCommand = (command: BaseCommand) => async (req, res, next) => {
   }
 };
 
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get(
   "/owners/:ownerId/webhooks",

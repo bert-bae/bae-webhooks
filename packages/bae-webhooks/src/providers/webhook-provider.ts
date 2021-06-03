@@ -1,16 +1,20 @@
-import { IsArray, IsDefined, IsString, IsUrl } from "class-validator";
+import { IsArray, IsDefined, IsString } from "class-validator";
 import { BaseProvider, ProviderContext } from "./base-provider";
 import { validateData } from "../utils/validator";
 import { NotFoundError } from "../errors";
 
 export class WebhookSchema {
-  @IsUrl()
+  @IsString()
   @IsDefined()
   url: string;
 
   @IsString()
   @IsDefined()
   ownerId: string;
+
+  @IsString()
+  @IsDefined()
+  webhookId: string;
 
   @IsArray()
   topics: string[];
@@ -36,9 +40,9 @@ export class WebhookProvider extends BaseProvider {
       ownerId: input.ownerId,
     };
 
-    if (input.url) {
-      params.url = input.url;
-      params.rangeExpression = `url = :rkey`;
+    if (input.webhookId) {
+      params.webhookId = input.webhookId;
+      params.rangeExpression = `webhookId = :rkey`;
     }
 
     return this.ctx.clients.webhooks.read(params);
@@ -51,7 +55,7 @@ export class WebhookProvider extends BaseProvider {
     if (!webhooks[0]) {
       throw new NotFoundError(
         "Webhook does not exist",
-        `${input.ownerId}::${input.url}`
+        `${input.ownerId}::${input.webhookId}`
       );
     }
 
@@ -59,7 +63,7 @@ export class WebhookProvider extends BaseProvider {
   }
 
   public async delete(
-    input: Pick<WebhookSchema, "ownerId" | "url">
+    input: Pick<WebhookSchema, "ownerId" | "webhookId">
   ): Promise<void> {
     return this.ctx.clients.webhooks.delete(input);
   }

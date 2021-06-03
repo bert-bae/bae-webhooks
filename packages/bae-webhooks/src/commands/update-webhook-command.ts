@@ -2,11 +2,16 @@ import { IsString, IsDefined, IsArray, IsUUID } from "class-validator";
 import { BaseCommand, CommandContext } from "./base-command";
 import { validateData } from "../utils/validator";
 import { NotFoundError } from "../errors";
+import { Topics } from "../types";
 
 class UpdateWebhookInput {
   @IsUUID()
   @IsDefined()
   ownerId: string;
+
+  @IsUUID()
+  @IsDefined()
+  webhookId: string;
 
   @IsString()
   @IsDefined()
@@ -14,7 +19,7 @@ class UpdateWebhookInput {
 
   @IsArray()
   @IsDefined()
-  topics: string[];
+  topics: Topics[];
 }
 
 export class UpdateWebhook extends BaseCommand {

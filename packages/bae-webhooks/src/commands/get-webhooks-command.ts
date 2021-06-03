@@ -1,11 +1,11 @@
-import { IsString, IsUUID, IsDefined } from "class-validator";
+import { IsUUID, IsDefined } from "class-validator";
 import { BaseCommand, CommandContext } from "./base-command";
 import { validateData } from "../utils/validator";
-import { DuplicateError, NotFoundError, UnauthorizedError } from "../errors";
 
 class GetWebhookCommandInput {
-  @IsString()
-  url: string;
+  @IsUUID()
+  @IsDefined()
+  webhookId: string;
 
   @IsUUID()
   @IsDefined()

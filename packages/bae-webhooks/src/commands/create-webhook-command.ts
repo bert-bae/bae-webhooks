@@ -1,4 +1,5 @@
 import { IsString, IsUUID, IsDefined } from "class-validator";
+import { v4 as uuidv4 } from "uuid";
 import { BaseCommand, CommandContext } from "./base-command";
 import { validateData } from "../utils/validator";
 import { DuplicateError, NotFoundError, UnauthorizedError } from "../errors";
@@ -37,16 +38,17 @@ export class CreateWebhookCommand extends BaseCommand {
 
     const existingWebhooks = await this.ctx.providers.webhooks.read({
       ownerId: input.ownerId,
-      url: input.url,
     });
-    if (existingWebhooks[0]) {
+    if (existingWebhooks.find((h) => h.url === input.url)) {
       throw new DuplicateError(
         `Webhook exists with ${input.url} under this owner ${input.ownerId}`
       );
     }
 
     await this.ctx.providers.webhooks.create({
-      ...input,
+      ownerId: input.ownerId,
+      url: input.url,
+      webhookId: uuidv4(),
       topics: [],
     });
 

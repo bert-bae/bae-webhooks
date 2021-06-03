@@ -1,6 +1,7 @@
 import { IsUUID, IsDefined, IsEnum, IsObject } from "class-validator";
-import { v4 as uuidv4 } from "uuid";
+import axios from "axios";
 import { BaseCommand, CommandContext } from "./base-command";
+import { WebhookSchema } from "../providers";
 import { validateData } from "../utils/validator";
 import { NotFoundError } from "../errors";
 import { Topics } from "../types";
@@ -35,6 +36,26 @@ export class ProcessWebhookCommand extends BaseCommand {
     const webhooks = await this.ctx.providers.webhooks.read({
       ownerId: input.ownerId,
     });
-    console.log(webhooks);
+    await Promise.all(
+      webhooks.map(async (hook) => {
+        if (this.hookIsSubscribed(hook, input.type)) {
+          await this.sendWebhook(hook, input);
+        }
+      })
+    );
+  }
+
+  private hookIsSubscribed(webhook: WebhookSchema, type: Topics): boolean {
+    return webhook.topics.includes(type);
+  }
+
+  private async sendWebhook(
+    webhook: WebhookSchema,
+    event: ProcessWebhookCommandInput
+  ): Promise<void> {
+    await axios.post(webhook.url, {
+      type: event.type,
+      data: event.data,
+    });
   }
 }
