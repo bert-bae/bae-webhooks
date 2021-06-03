@@ -1,3 +1,4 @@
+import { WebhookCipher } from "@bae/webhooks";
 import { OwnerProvider, WebhookProvider } from "../providers";
 
 export type CommandContext = {
@@ -6,6 +7,7 @@ export type CommandContext = {
     warn: (message, data) => void;
     error: (message, data) => void;
   };
+  cipher: WebhookCipher;
   providers: {
     owners: OwnerProvider;
     webhooks: WebhookProvider;

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "incremental": true,
+    "module": "commonjs",
+    "outDir": "./lib",
+    "removeComments": true,
+    "sourceMap": true
+  }
+}
