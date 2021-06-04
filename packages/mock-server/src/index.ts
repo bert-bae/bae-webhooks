@@ -1,5 +1,5 @@
 import express from "express";
-import { WebhookCipher } from "@bae/webhooks";
+import { WebhookCipher } from "@bae/bae-webhooks";
 
 const app = express();
 const port = process.env.PORT;

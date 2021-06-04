@@ -6,7 +6,7 @@
     "experimentalDecorators": true,
     "incremental": true,
     "module": "commonjs",
-    "outDir": "./lib",
+    "outDir": "./build",
     "removeComments": true,
     "sourceMap": true
   }

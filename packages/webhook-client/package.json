@@ -1,28 +1,23 @@
 {
-  "name": "@bae/mock-server",
+  "name": "@bae/webhook-client",
   "version": "1.0.0",
-  "description": "",
+  "description": "> TODO: description",
   "main": "build/index.js",
+  "typings": "build/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --declaration",
-    "dev": "ts-node-dev -r dotenv/config ./src/index.ts"
+    "build": "tsc --declaration"
   },
   "keywords": [],
   "author": "Elbert Bae",
   "license": "ISC",
   "dependencies": {
-    "@bae/webhook-client": "^1.0.0",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "axios": "^0.21.1"
   },
   "devDependencies": {
-    "@types/express": "^4.17.12",
     "@types/node": "^15.9.0",
-    "jest": "^27.0.3",
     "ts-jest": "^27.0.2",
     "ts-node": "^10.0.0",
-    "ts-node-dev": "^1.1.6",
     "typescript": "^4.3.2"
   },
   "homepage": "https://github.com/bert-bae/webhook-client#readme",
@@ -32,6 +27,9 @@
   "files": [
     "build"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bert-bae/webhook-client.git"

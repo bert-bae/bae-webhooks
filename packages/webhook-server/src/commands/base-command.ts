@@ -1,4 +1,4 @@
-import { WebhookCipher } from "@bae/webhooks";
+import { WebhookCipher } from "@bae/bae-webhooks";
 import { OwnerProvider, WebhookProvider } from "../providers";
 
 export type CommandContext = {

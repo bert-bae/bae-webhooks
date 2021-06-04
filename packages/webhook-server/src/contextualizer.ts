@@ -1,4 +1,5 @@
 import log from "loglevel";
+import { WebhookCipher } from "@bae/bae-webhooks";
 import { ProviderContext, WebhookProvider, OwnerProvider } from "./providers";
 import { DynamoDBClient } from "./clients";
 import { CommandContext } from "./commands";
@@ -26,5 +27,6 @@ export const createCommandContext = (): CommandContext => {
       owners: ownerProvider,
       webhooks: webhookProvider,
     },
+    cipher: new WebhookCipher(),
   };
 };
