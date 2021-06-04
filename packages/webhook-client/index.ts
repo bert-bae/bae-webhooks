@@ -1,1 +1,1 @@
-export { WebookCipher } from "./webhook-cipher";
+export { WebhookCipher } from './webhook-cipher'

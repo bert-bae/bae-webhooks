@@ -1,23 +1,21 @@
-import crypto from "crypto";
+import crypto from 'crypto'
 
-export class WebookCipher {
-  private alg: string;
-  private iv: any;
-  private secretKey: string;
+export class WebhookCipher {
+  private alg: string
+  private iv: any
 
-  constructor(secretKey: string) {
-    this.alg = "aes-256-cbc";
-    this.iv = crypto.randomBytes(16).toString("hex").slice(0, 16);
-    this.secretKey = secretKey;
+  constructor() {
+    this.alg = 'aes-256-cbc'
+    this.iv = crypto.randomBytes(16).toString('hex').slice(0, 16)
   }
 
-  public encrypt(message: string) {
-    const cipher = crypto.createCipheriv(this.alg, this.secretKey, this.iv);
-    return cipher.update(message, "utf8", "hex") + cipher.final("hex");
+  public encrypt(message: string, secretKey: string) {
+    const cipher = crypto.createCipheriv(this.alg, secretKey, this.iv)
+    return cipher.update(message, 'utf8', 'hex') + cipher.final('hex')
   }
 
-  public decrypt(hash: string) {
-    const decipher = crypto.createDecipheriv(this.alg, this.secretKey, this.iv);
-    return decipher.update(hash, "hex", "utf8") + decipher.final("utf8");
+  public decrypt(hash: string, secretKey: string) {
+    const decipher = crypto.createDecipheriv(this.alg, secretKey, this.iv)
+    return decipher.update(hash, 'hex', 'utf8') + decipher.final('utf8')
   }
 }

@@ -34,7 +34,6 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "loglevel": "^1.7.1",
-    "node-rdkafka": "^2.10.1",
     "uuid": "^8.3.2"
   },
   "homepage": "https://github.com/bert-bae/webhook-client#readme",

@@ -1,12 +1,12 @@
-import log from "loglevel";
-import { WebhookCipher } from "@bae/bae-webhooks";
-import { ProviderContext, WebhookProvider, OwnerProvider } from "./providers";
-import { DynamoDBClient } from "./clients";
-import { CommandContext } from "./commands";
+import log from 'loglevel'
+import { WebhookCipher } from '@bae/webhook-client'
+import { ProviderContext, WebhookProvider, OwnerProvider } from './providers'
+import { DynamoDBClient } from './clients'
+import { CommandContext } from './commands'
 
 const createProviderContext = (): ProviderContext => {
-  const ownerClient = new DynamoDBClient("Owners", "id");
-  const webhookClient = new DynamoDBClient("Webhooks", "ownerId", "webhookId");
+  const ownerClient = new DynamoDBClient('Owners', 'id')
+  const webhookClient = new DynamoDBClient('Webhooks', 'ownerId', 'webhookId')
 
   return {
     logger: log,
@@ -14,13 +14,13 @@ const createProviderContext = (): ProviderContext => {
       owners: ownerClient,
       webhooks: webhookClient,
     },
-  };
-};
-const providerContext = createProviderContext();
+  }
+}
+const providerContext = createProviderContext()
 
 export const createCommandContext = (): CommandContext => {
-  const webhookProvider = new WebhookProvider(providerContext);
-  const ownerProvider = new OwnerProvider(providerContext);
+  const webhookProvider = new WebhookProvider(providerContext)
+  const ownerProvider = new OwnerProvider(providerContext)
   return {
     logger: log,
     providers: {
@@ -28,5 +28,5 @@ export const createCommandContext = (): CommandContext => {
       webhooks: webhookProvider,
     },
     cipher: new WebhookCipher(),
-  };
-};
+  }
+}
