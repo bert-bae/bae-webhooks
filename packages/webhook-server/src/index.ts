@@ -19,8 +19,6 @@ const port = process.env.PORT
 const context = createCommandContext()
 const processCommand = (command: BaseCommand) => async (req, res, next) => {
   const { body, params, query, headers } = req
-  console.log(body)
-  console.log(params)
   try {
     const providerResult = await command.execute({
       ...(query || {}),
