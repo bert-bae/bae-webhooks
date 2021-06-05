@@ -1,19 +1,19 @@
-version: "3"
+version: '3'
 services:
-  kafka:
-    container_name: kafka
-    image: spotify/kafka
-    environment:
-      ADVERTISED_HOST: localhost
-      ADVERTISED_PORT: 9092
-    ports:
-      - "9092:9092"
+  # kafka:
+  #   container_name: kafka
+  #   image: spotify/kafka
+  #   environment:
+  #     ADVERTISED_HOST: localhost
+  #     ADVERTISED_PORT: 9092
+  #   ports:
+  #     - '9092:9092'
 
-  dynamodb:
+  webhooks-dynamodb:
     image: amazon/dynamodb-local:latest
     container_name: dynamodb
     ports:
-      - "8000:8000"
+      - '8000:8000'
     volumes:
       - ./.data/dyanmodb:/data/dynamodb
-    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb"]
+    command: ['-jar', 'DynamoDBLocal.jar', '-sharedDb']

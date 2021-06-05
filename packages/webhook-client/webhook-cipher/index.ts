@@ -6,7 +6,7 @@ export class WebhookCipher {
 
   constructor() {
     this.alg = 'aes-256-cbc'
-    this.iv = crypto.randomBytes(16).toString('hex').slice(0, 16)
+    this.iv = '1234567891234567' // crypto.randomBytes(16).toString('hex').slice(0, 16)
   }
 
   public encrypt(message: string, secretKey: string) {

@@ -28,6 +28,9 @@ export class ProcessWebhookCommand extends BaseCommand {
 
   public async execute(input: ProcessWebhookCommandInput): Promise<void> {
     await validateData(input, new ProcessWebhookCommandInput())
+    this.ctx.logger.info(
+      `[ProcessWebhook] Processing webhook event ${input.type} for owner ${input.ownerId}`
+    )
     const owner = await this.ctx.providers.owners.read({ id: input.ownerId })
     if (!owner) {
       throw new NotFoundError('Owner not found', input.ownerId)
@@ -39,10 +42,14 @@ export class ProcessWebhookCommand extends BaseCommand {
     await Promise.all(
       webhooks.map(async (hook) => {
         if (this.hookIsSubscribed(hook, input.type)) {
-          await this.sendWebhook(
-            hook,
-            this.ctx.cipher.encrypt(JSON.stringify(input), owner.secretToken)
+          const payload = this.ctx.cipher.encrypt(
+            JSON.stringify(input),
+            owner.secretToken
           )
+          this.ctx.logger.info(
+            `[ProcessWebhook] Topic subscription to ${input.type} found. Sending encrypted payload ${payload}`
+          )
+          await this.sendWebhook(hook, payload)
         }
       })
     )

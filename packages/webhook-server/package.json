@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc --declaration",
-    "dev": "ts-node-dev -r dotenv/config ./src/index.ts"
+    "dev": "ts-node-dev -r dotenv/config ./src/index.ts",
+    "db:init": "node ./init-db.js"
   },
   "keywords": [
     "javascript",
