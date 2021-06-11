@@ -9,7 +9,7 @@ app.use(express.json())
 
 const webhookCipher = new WebhookCipher()
 
-app.get('/create-mocks', async (req, res, next) => {
+app.post('/create-mocks', async (req, res, next) => {
   const {
     data: { data: owner },
   } = await axios.post(`${process.env.WEBHOOK_SERVER_URL}/owners`, {})
